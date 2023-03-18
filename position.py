@@ -1,5 +1,8 @@
 import serial
 import pynmea2
+import requests
+import time
+import asyncio
 
 # Open serial port
 ser = serial.Serial('COM8', 9600)
@@ -8,6 +11,25 @@ ser = serial.Serial('COM8', 9600)
 latitudes = []
 longitudes = []
 altitudes = []
+
+async def post(lat,long,alt):
+    headers = {
+            'Synx-Cat': '1',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    service_url = "https://group5.cioty.com/health-status"
+    base_body = "token=aToken_36d8715e3531fd8e8c01fcbfd26bf5af1908e14f15014d2d14817b568bc0bb0e&objectID=1&sender=NEO-M9N"
+    myobj = {'lat': lat, 'long': long, 'alt': alt}
+    data = base_body + "&data=" + str(myobj)
+
+    x = requests.post(service_url, headers = headers, data = data, verify=False)
+
+    print(x.text)
+    await time.sleep(1)
+
+
+
 
 # Continuously read data from serial port and update plot
 while True:
@@ -31,3 +53,5 @@ while True:
         print("Altitude :", alt)
         print("Longtitude: ", lat)
         print("Latitude: ", lon)
+
+    asyncio.run(post(lat,lon,alt))
