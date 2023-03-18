@@ -18,7 +18,7 @@ async def post(lat,long,alt):
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 
-    service_url = "https://group5.cioty.com/health-status"
+    service_url = "https://group5.cioty.com/gps-data"
     base_body = "token=aToken_36d8715e3531fd8e8c01fcbfd26bf5af1908e14f15014d2d14817b568bc0bb0e&objectID=1&sender=NEO-M9N"
     myobj = {'lat': lat, 'long': long, 'alt': alt}
     data = base_body + "&data=" + str(myobj)
