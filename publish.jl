@@ -1,4 +1,4 @@
-using Pkg; Pkg.add("CSV"); Pkg.add("DataFrames"); Pkg.add("HTTP"); Pkg.add("JSON"); Pkg.add("JSONTables")
+# using Pkg; Pkg.add("CSV"); Pkg.add("DataFrames"); Pkg.add("HTTP"); Pkg.add("JSON"); Pkg.add("JSONTables")
 using HTTP, CSV, DataFrames, JSON, JSONTables
 
 #= 
@@ -13,41 +13,26 @@ L. Rachakonda, S. P. Mohanty, and E. Kougianos, “cStick: A Calm Stick for Fall
 
 =#
 
+df = DataFrame(CSV.File("cStick.csv"))
 
+wait_time = 1.0 # seconds
+
+
+# Send HTTP POST
 headers = [
     "Synx-Cat" => "1",
     "Content-Type" => "application/x-www-form-urlencoded",
 ]
-df = DataFrame(CSV.File("cStick.csv"))
 
-
-
-size_lim = 1024 # 1 KB
-num_rows = size(df, 1)
-num_cols = size(df, 2)
-max_datarate = 150_000 # 150 KB/s
-wait_time = size_lim / max_datarate
-
-df_size = num_rows * num_cols * 8 # 8 bytes per Float64
-
-@show chunk_size = floor(Int, size_lim / (num_cols * 8))
-
-
-
-# Send HTTP POST
 service_url = "https://group5.cioty.com/health-status"
-base_body = "token=aToken_36d8715e3531fd8e8c01fcbfd26bf5af1908e14f15014d2d14817b568bc0bb0e&objectID=1"
-
-for i in 1:chunk_size:num_rows
-    chunk = df[i:min(i+chunk_size-1, num_rows), :]
-    data_send = base_body * "&data=" * string(objecttable(chunk))
-    display(data_send)
-    resp = HTTP.post("https://group5.cioty.com/health-status"; headers = headers, body = data_send, verify=false)
-    sleep(wait_time)
+base_body = "token=aToken_36d8715e3531fd8e8c01fcbfd26bf5af1908e14f15014d2d14817b568bc0bb0e&objectID=1&sender=haralg"
+while true
+    for i in 1:size(df, 1)
+        # get row i
+        chunk = df[i, :]
+        data_send = base_body * "&data=" * string(objecttable(chunk))
+        resp = HTTP.post("https://group5.cioty.com/health-status"; headers = headers, body = data_send, verify=false)
+        display(resp.status)
+        sleep(wait_time)
+    end
 end
-
-data_send = base_body * "&data=1203023010.0000"
-resp = HTTP.post("https://group5.cioty.com/health-status"; headers = headers, body = data_send, verify=false)
-
-
-
