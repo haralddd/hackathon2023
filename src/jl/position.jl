@@ -1,6 +1,6 @@
 # Filtering GPS signals for locating elderly people out on a walk
 # Mind you this is voluntarily
-using Pkg; Pkg.add("NMEAParser"); Pkg.add("Gadfly"); Pkg.add("CircuitsIO");
+using Pkg; Pkg.add("Gadfly"); Pkg.add("NMEA")
 
 
 using GadFly
