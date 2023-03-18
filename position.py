@@ -8,9 +8,9 @@ import asyncio
 ser = serial.Serial('COM8', 9600)
 
 # Create empty lists to store latitude and longitude data
-latitudes = []
-longitudes = []
-altitudes = []
+lat = 0
+lon = 0
+alt = 0
 
 async def post(lat,long,alt):
     headers = {
@@ -20,13 +20,13 @@ async def post(lat,long,alt):
 
     service_url = "https://group5.cioty.com/gps-data"
     base_body = "token=aToken_36d8715e3531fd8e8c01fcbfd26bf5af1908e14f15014d2d14817b568bc0bb0e&objectID=1&sender=NEO-M9N"
-    myobj = {'lat': lat, 'long': long, 'alt': alt}
+    myobj = {'lat': lat, 'long': lon, 'alt': alt}
     data = base_body + "&data=" + str(myobj)
 
     x = requests.post(service_url, headers = headers, data = data, verify=False)
 
     print(x.text)
-    await time.sleep(1)
+    await asyncio.sleep(1)
 
 
 
@@ -54,4 +54,4 @@ while True:
         print("Longtitude: ", lat)
         print("Latitude: ", lon)
 
-    asyncio.run(post(lat,lon,alt))
+        asyncio.run(post(lat,lon,alt))
